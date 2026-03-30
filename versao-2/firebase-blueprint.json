@@ -1,0 +1,83 @@
+{
+  "entities": {
+    "Cliente": {
+      "title": "Cliente",
+      "description": "Dados do cliente",
+      "type": "object",
+      "properties": {
+        "nome": { "type": "string" },
+        "data_nascimento": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "email": { "type": "string" },
+        "sexo": { "type": "string", "enum": ["Masculino", "Feminino"] },
+        "created_at": { "type": "string" },
+        "uid": { "type": "string" }
+      },
+      "required": ["nome", "data_nascimento", "sexo", "uid"]
+    },
+    "Analise": {
+      "title": "Analise",
+      "description": "Análise de bioressonância",
+      "type": "object",
+      "properties": {
+        "cliente_id": { "type": "string" },
+        "status": { "type": "string", "enum": ["processando", "concluida", "erro"] },
+        "arquivo_url": { "type": "string" },
+        "pdf_final_url": { "type": "string" },
+        "tipo_cliente": { "type": "string" },
+        "feedback_treino": { "type": "string" },
+        "sintese_vibracional": { "type": "string" },
+        "created_at": { "type": "string" },
+        "uid": { "type": "string" }
+      },
+      "required": ["cliente_id", "status", "uid"]
+    },
+    "ResultadoBioressonancia": {
+      "title": "ResultadoBioressonancia",
+      "description": "Resultados extraídos da análise",
+      "type": "object",
+      "properties": {
+        "analise_id": { "type": "string" },
+        "categoria_relatorio": { "type": "string" },
+        "dados_extraidos": { "type": "string" },
+        "created_at": { "type": "string" },
+        "uid": { "type": "string" }
+      },
+      "required": ["analise_id", "dados_extraidos", "uid"]
+    },
+    "PlanoTerapeutico": {
+      "title": "PlanoTerapeutico",
+      "description": "Plano terapêutico gerado",
+      "type": "object",
+      "properties": {
+        "analise_id": { "type": "string" },
+        "cliente_id": { "type": "string" },
+        "sugestoes_terapias": { "type": "string" },
+        "sintese_final": { "type": "string" },
+        "recomendacoes_editaveis": { "type": "string" },
+        "pdf_url": { "type": "string" },
+        "created_at": { "type": "string" },
+        "uid": { "type": "string" }
+      },
+      "required": ["analise_id", "cliente_id", "uid"]
+    }
+  },
+  "firestore": {
+    "/clientes/{clienteId}": {
+      "schema": { "$ref": "#/entities/Cliente" },
+      "description": "Clientes do terapeuta"
+    },
+    "/analises/{analiseId}": {
+      "schema": { "$ref": "#/entities/Analise" },
+      "description": "Análises de clientes"
+    },
+    "/resultados_bioressonancia/{resultadoId}": {
+      "schema": { "$ref": "#/entities/ResultadoBioressonancia" },
+      "description": "Resultados de análises"
+    },
+    "/planos_terapeuticos/{planoId}": {
+      "schema": { "$ref": "#/entities/PlanoTerapeutico" },
+      "description": "Planos terapêuticos"
+    }
+  }
+}
