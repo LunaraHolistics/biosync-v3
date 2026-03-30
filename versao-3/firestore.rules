@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+    
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+    
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    match /clientes/{clienteId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && uidUnchanged() && hasRequiredFields(['nome', 'data_nascimento', 'sexo', 'uid']);
+      allow update: if isDocOwner() && uidNotModified();
+      allow delete: if isDocOwner();
+    }
+
+    match /analises/{analiseId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && uidUnchanged() && hasRequiredFields(['cliente_id', 'status', 'uid']);
+      allow update: if isDocOwner() && uidNotModified();
+      allow delete: if isDocOwner();
+    }
+
+    match /resultados_bioressonancia/{resultadoId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && uidUnchanged() && hasRequiredFields(['analise_id', 'dados_extraidos', 'uid']);
+      allow update: if isDocOwner() && uidNotModified();
+      allow delete: if isDocOwner();
+    }
+
+    match /planos_terapeuticos/{planoId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && uidUnchanged() && hasRequiredFields(['analise_id', 'cliente_id', 'uid']);
+      allow update: if isDocOwner() && uidNotModified();
+      allow delete: if isDocOwner();
+    }
+  }
+}
